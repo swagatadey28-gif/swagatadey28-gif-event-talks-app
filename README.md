@@ -1,0 +1,1 @@
+# swagatadey28-gif-event-talks-app
