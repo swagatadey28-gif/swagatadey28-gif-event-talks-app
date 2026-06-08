@@ -1,0 +1,15 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Temporary Files
+*.tmp
+*.log
+
+# Editor-specific files (e.g., VS Code)
+.vscode/
+
+# Node.js (if applicable in the future)
+node_modules/
+npm-debug.log
+.env

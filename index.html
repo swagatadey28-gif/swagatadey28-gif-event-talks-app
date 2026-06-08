@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks Event Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-container input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-container button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+        .schedule-item {
+            background-color: #e9ecef;
+            border-left: 5px solid #007bff;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .schedule-item.lunch {
+            border-left: 5px solid #28a745;
+            background-color: #d4edda;
+        }
+        .schedule-item.transition {
+            border-left: 5px solid #ffc107;
+            background-color: #fff3cd;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .schedule-time {
+            font-weight: bold;
+            flex-shrink: 0;
+            width: 120px;
+        }
+        .schedule-details {
+            flex-grow: 1;
+        }
+        .schedule-details h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        .schedule-details p {
+            margin-bottom: 5px;
+        }
+        .schedule-details .speakers, .schedule-details .category {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .schedule-details .category span {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Annual Tech Innovations Summit</h1>
+        <p style="text-align: center;">Join us for a day of insightful technical talks!</p>
+
+        <div class="search-container">
+            <input type="text" id="categorySearch" placeholder="Search by category (e.g., AI, Web, Cloud)">
+            <button onclick="filterTalks()">Search</button>
+        </div>
+
+        <h2>Event Schedule</h2>
+        <div id="schedule">
+            <!-- Schedule items will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const eventStartTime = new Date();
+        eventStartTime.setHours(10, 0, 0); // Event starts at 10:00 AM
+
+        const talkDuration = 60; // minutes
+        const transitionDuration = 10; // minutes
+        const lunchDuration = 60; // minutes
+        const lunchBreakTalkNumber = 2; // Lunch break after the 2nd talk
+
+        const talksData = [
+            {
+                title: "The Future of AI in Web Development",
+                speakers: ["Alice Johnson"],
+                category: ["AI", "Web Development", "Frontend"],
+                duration: 60,
+                description: "Exploring how AI is revolutionizing modern web development workflows and user experiences."
+            },
+            {
+                title: "Deep Dive into Serverless Architectures",
+                speakers: ["Bob Williams", "Charlie Davis"],
+                category: ["Cloud", "Backend", "Serverless"],
+                duration: 60,
+                description: "An in-depth look at designing, deploying, and scaling applications using serverless technologies."
+            },
+            {
+                title: "Advanced JavaScript Patterns for Performance",
+                speakers: ["Diana Miller"],
+                category: ["JavaScript", "Frontend", "Performance"],
+                duration: 60,
+                description: "Optimizing your JavaScript code for maximum speed and efficiency in large-scale applications."
+            },
+            {
+                title: "Containerization Best Practices with Docker and Kubernetes",
+                speakers: ["Eve Brown"],
+                category: ["DevOps", "Cloud", "Containers"],
+                duration: 60,
+                description: "Mastering the art of container orchestration to build resilient and scalable systems."
+            },
+            {
+                title: "Data Science with Python: From Pandas to Production",
+                speakers: ["Frank Green", "Grace Hall"],
+                category: ["Data Science", "Python", "Machine Learning"],
+                duration: 60,
+                description: "A practical guide to data analysis, model building, and deploying data science solutions."
+            },
+            {
+                title: "Security in the Modern Web Ecosystem",
+                speakers: ["Henry White"],
+                category: ["Security", "Web Development", "Backend"],
+                duration: 60,
+                description: "Understanding common web vulnerabilities and implementing robust security measures."
+            }
+        ];
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function generateSchedule(filteredTalks = talksData) {
+            const scheduleContainer = document.getElementById('schedule');
+            scheduleContainer.innerHTML = ''; // Clear existing schedule
+
+            let currentTime = new Date(eventStartTime);
+            let talkCount = 0;
+
+            filteredTalks.forEach((talk, index) => {
+                // Add talk item
+                const talkEndTime = new Date(currentTime.getTime() + talk.duration * 60 * 1000);
+                const talkElement = document.createElement('div');
+                talkElement.classList.add('schedule-item');
+                talkElement.innerHTML = `
+                    <div class="schedule-time">${formatTime(currentTime)} - ${formatTime(talkEndTime)}</div>
+                    <div class="schedule-details">
+                        <h3>${talk.title}</h3>
+                        <p class="speakers">Speaker(s): ${talk.speakers.join(', ')}</p>
+                        <p class="category">Categories: ${talk.category.map(cat => `<span>${cat}</span>`).join('')}</p>
+                        <p>${talk.description}</p>
+                    </div>
+                `;
+                scheduleContainer.appendChild(talkElement);
+
+                currentTime = talkEndTime;
+                talkCount++;
+
+                // Add lunch break if applicable
+                if (talkCount === lunchBreakTalkNumber) {
+                    const lunchEndTime = new Date(currentTime.getTime() + lunchDuration * 60 * 1000);
+                    const lunchElement = document.createElement('div');
+                    lunchElement.classList.add('schedule-item', 'lunch');
+                    lunchElement.innerHTML = `
+                        <div class="schedule-time">${formatTime(currentTime)} - ${formatTime(lunchEndTime)}</div>
+                        <div class="schedule-details">
+                            <h3>Lunch Break</h3>
+                            <p>Enjoy a delicious lunch!</p>
+                        </div>
+                    `;
+                    scheduleContainer.appendChild(lunchElement);
+                    currentTime = lunchEndTime;
+                }
+
+                // Add transition time, unless it's the very last talk or immediately before lunch
+                if (index < filteredTalks.length - 1 && talkCount !== lunchBreakTalkNumber) {
+                    const transitionEndTime = new Date(currentTime.getTime() + transitionDuration * 60 * 1000);
+                    const transitionElement = document.createElement('div');
+                    transitionElement.classList.add('schedule-item', 'transition');
+                    transitionElement.innerHTML = `
+                        <div class="schedule-time">${formatTime(currentTime)} - ${formatTime(transitionEndTime)}</div>
+                        <div class="schedule-details">
+                            <p>Transition / Break</p>
+                        </div>
+                    `;
+                    scheduleContainer.appendChild(transitionElement);
+                    currentTime = transitionEndTime;
+                }
+            });
+        }
+
+        function filterTalks() {
+            const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
+            const filteredTalks = talksData.filter(talk =>
+                talk.category.some(cat => cat.toLowerCase().includes(searchTerm))
+            );
+            generateSchedule(filteredTalks);
+        }
+
+        // Initial schedule generation on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSchedule();
+        });
+    </script>
+</body>
+</html>
